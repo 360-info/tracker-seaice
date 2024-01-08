@@ -11,19 +11,35 @@ sea_ice_url <- function(hemisphere = c("north", "south")) {
     "_seaice_extent_daily_v3.0.csv")
 }
 
-sea_ice_url("south") |>
+# download and tidy the daily obs
+c(sea_ice_url("south"), sea_ice_url("north")) |>
   read_csv(
     col_names = c("year", "month", "day", "extent_m_sq_km", "missing",
       "source_data"),
-    skip = 2) |>
+    skip = 2,
+    id = "path") |>
   mutate(
+    hemisphere =
+      dirname(path) |>
+      str_replace_all(c(
+        "https://noaadata.apps.nsidc.org/NOAA/G02135/" = "",
+        "/daily/data" = "")),
     date = ymd(paste(year, month, day)),
-    nday = date - ymd(paste(year, "01", "01"))) ->
+    nday = date - ymd(paste(year, "01", "01"))) |>
+  select(hemisphere, date, nday, extent_m_sq_km) ->
 sea_ice
+
+# write dailies out to disk
+sea_ice |>
+  filter(hemisphere == "north") |>
+  write_csv(here("data", "seaice-daily-north.csv"))
+sea_ice |>
+  filter(hemisphere == "south") |>
+  write_csv(here("data", "seaice-daily-south.csv"))
 
 # calculate iqr
 sea_ice |>
-  group_by(nday) |>
+  group_by(hemisphere, nday) |>
   summarise(
     q1 = quantile(extent_m_sq_km, 0.25, na.rm = TRUE),
     median = median(extent_m_sq_km, na.rm = TRUE),
@@ -31,45 +47,38 @@ sea_ice |>
   ungroup() ->
 sea_ice_iqr
 
-# calculate previous minimum
+# write out iqr
+sea_ice_iqr |>
+  filter(hemisphere == "north") |>
+  write_csv(here("data", "seaice-iqr-north.csv"))
+sea_ice_iqr |>
+  filter(hemisphere == "south") |>
+  write_csv(here("data", "seaice-iqr-south.csv"))
+
+# calculate previous minimum (ignoring this year)
 sea_ice |>
-  filter(year != substr(Sys.Date(), 1, 4)) |>
+  filter(year(date) != substr(Sys.Date(), 1, 4)) |>
+  group_by(hemisphere) |>
   arrange(extent_m_sq_km) |>
   slice(1) |>
-  pull(year) ->
+  ungroup() |>
+  mutate(year = year(date)) |>
+  select(hemisphere, year) ->
 prev_lowest_year
 
 sea_ice |>
-  filter(year == prev_lowest_year) ->
-prev_lowest_year_obs
+  filter(
+    hemisphere == "north",
+    year(date) == (prev_lowest_year |>
+      filter(hemisphere == "north") |>
+      pull(year))) |>
+  write_csv(here("data", "seaice-lowestyear-north.csv"))
 
-# and this year's data
 sea_ice |>
-  filter(year == substr(Sys.Date(), 1, 4)) ->
-current_data
+  filter(
+    hemisphere == "south",
+    year(date) == (prev_lowest_year |>
+      filter(hemisphere == "south") |>
+      pull(year))) |>
+  write_csv(here("data", "seaice-lowestyear-south.csv"))
 
-# visualise
-ggplot() +
-  geom_ribbon(
-    aes(x = nday, ymin = q1, ymax = q3),
-    data = sea_ice_iqr,
-    fill = "#aaaaaa") +
-  geom_line(
-    aes(x = nday, y = median),
-    data = sea_ice_iqr,
-    colour = "#666666") +
-  geom_line(
-    aes(x = nday, y = extent_m_sq_km),
-    data = prev_lowest_year_obs,
-    colour = "#333333", linetype = "dotted") +
-  geom_line(
-    aes(x = nday, y = extent_m_sq_km),
-    data = current_data,
-    colour = "red") +
-  theme_minimal() +
-  labs(
-    x = "Day of year", y = "Extent (M sq km)",
-    title = "Antarctic sea ice extent") ->
-sea_ice_plot
-
-ggsave(here("sea_ice_south.png"), sea_ice_plot, width = 16, height = 9)
