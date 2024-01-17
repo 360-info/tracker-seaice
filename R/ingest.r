@@ -35,10 +35,14 @@ sea_ice |>
 # calculate iqr
 sea_ice |>
   group_by(hemisphere, nday) |>
+  filter(year(date) != substr(Sys.Date(), 1, 4)) |>
   summarise(
+    min = min(extent_m_sq_km, na.rm = TRUE),
     q1 = quantile(extent_m_sq_km, 0.25, na.rm = TRUE),
+    mean = mean(extent_m_sq_km, na.rm = TRUE),
     median = median(extent_m_sq_km, na.rm = TRUE),
-    q3 = quantile(extent_m_sq_km, 0.75, na.rm = TRUE)) |>
+    q3 = quantile(extent_m_sq_km, 0.75, na.rm = TRUE),
+    max = max(extent_m_sq_km, na.rm = TRUE),) |>
   ungroup() ->
 sea_ice_iqr
 

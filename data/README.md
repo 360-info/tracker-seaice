@@ -7,10 +7,11 @@ This dataset updates daily based on upstream updates from the [Sea Ice Index](ht
 
 The processed observations are:
 
-- `seaice-daily-[north|south].csv` contains historical observations for either the Arctic (`north`) or Antarctic (`south`)
+- `seaice-daily-[north|south].csv`: historical observations for either the Arctic (`north`) or Antarctic (`south`)
+- `seaice-annual-[north|south].csv`: annual statistics (min, mean and max) for each complete year on the record
 - `seaice-lowestyear-[north|south].csv`: observations filtered to the year of the lowest observation (excluding this year)
 - `seaice-thisyear-[north|south].csv`: observations filtered to this year 
-- `seaice-iqr-[north|south].csv` contains the interquartile range for the historical period (excluding the current year). Columns include:
+- `seaice-iqr-[north|south].csv`: the interquartile range for each day of the year over the historical period (excluding the current year). Columns include:
   - `hemisphere`: `north` or `south`
   - `nday`: The day of the year (0-366)
   - `q1`: The first quartile of the extent for this day
