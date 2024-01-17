@@ -20,6 +20,7 @@ c(sea_ice_url("south"), sea_ice_url("north")) |>
     date = ymd(paste(year, month, day)),
     nday = date - ymd(paste(year, "01", "01"))) |>
   select(hemisphere, date, nday, extent_m_sq_km) |>
+  filter(year(date) > 1978) |>
   arrange(hemisphere, date) ->
 sea_ice
 
@@ -86,6 +87,30 @@ sea_ice |>
     hemisphere == "south",
     year(date) == substr(Sys.Date(), 1, 4)) |>
   write_csv(here("data", "seaice-thisyear-south.csv"))
+
+# finally, write out annual stats
+sea_ice |>
+  mutate(year = year(date)) |>
+  filter(year != substr(Sys.Date(), 1, 4)) |>
+  group_by(year, hemisphere) |>
+  summarise(
+    min = min(extent_m_sq_km, na.rm = TRUE),
+    mean = mean(extent_m_sq_km, na.rm = TRUE),
+    max = max(extent_m_sq_km, na.rm = TRUE)) |>
+  ungroup() ->
+sea_ice_annual
+
+sea_ice_annual |>
+  filter(
+    hemisphere == "north",
+    year != substr(Sys.Date(), 1, 4)) |>
+  write_csv(here("data", "seaice-annual-north.csv"))
+
+sea_ice_annual |>
+  filter(
+    hemisphere == "south",
+    year != substr(Sys.Date(), 1, 4)) |>
+  write_csv(here("data", "seaice-annual-south.csv"))
 
 # record update time for subsequent steps (basically to insert into slack msg)
 write_to_gha_env("DAILY_RUN", "true")
