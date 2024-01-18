@@ -117,6 +117,6 @@ sea_ice_annual |>
   write_csv(here("data", "seaice-annual-south.csv"))
 
 # record update time for subsequent steps (basically to insert into slack msg)
-write_to_gha_env("DAILY_RUN", "true")
+write_to_gha_env("DAILY_UPDATED", "true")
 write_to_gha_env("DAILY_RUN_END", Sys.time())
 message("Successfully updated!")
