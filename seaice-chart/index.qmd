@@ -23,7 +23,7 @@ format:
   max-height: 776px
   bg-colour: white
   title: "Interactive: shrinking sea ice"
-  domain: https://seaice.360visuals.org
+  domain: https://seaicetracker.360visuals.org
   fragments: 
   path: /seaice-chart/
   about: |
