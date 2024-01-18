@@ -34,8 +34,8 @@ format:
 
 ```{ojs}
 //| label: get-data
-seaiceNorth = FileAttachment("/data/seaice-annual-north.csv").csv({ typed: true})
-seaiceSouth = FileAttachment("/data/seaice-annual-south.csv").csv({ typed: true})
+seaiceNorth = FileAttachment("https://raw.githubusercontent.com/360-info/tracker-seaice/main/data/seaice-annual-north.csv").csv({ typed: true})
+seaiceSouth = FileAttachment("https://raw.githubusercontent.com/360-info/tracker-seaice/main/data/seaice-annual-south.csv").csv({ typed: true})
 
 seaiceAnnual = hemisphere == "north" ? seaiceNorth : seaiceSouth
 ```
