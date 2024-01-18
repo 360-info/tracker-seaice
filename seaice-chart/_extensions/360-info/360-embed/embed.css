@@ -55,7 +55,7 @@ header#title-block-header p {
   
   header#title-block-header h1 
   {
-    font-size: 130%;
+    font-size: 180%;
   }
 
   header#title-block-header p 
@@ -78,7 +78,7 @@ header#title-block-header p {
   
   header#title-block-header h1 
   {
-    font-size: 120%;
+    font-size: 130%;
   }
 
   header#title-block-header p 
@@ -87,7 +87,6 @@ header#title-block-header p {
     font-weight: bold;
   }
 }
-
 
 .embedcode {
   font-size: 60%;
@@ -112,5 +111,32 @@ header#title-block-header p {
 
 .embedcode pre .code-copy-button {
 
+}
+
+#controls {
+  font-weight: bold;
+}
+
+#controls form {
+  margin-block: 5px;
+  justify-content: center;
+}
+
+@media (max-width: 275px) {
+  #controls {
+    font-size: 70%;
+  }
+}
+
+@media (max-width: 375px) {
+  #controls {
+    font-size: 80%;
+  }
+}
+
+@media (max-width: 475px) {
+  #controls {
+    font-size: 90%;
+  }
 }
 

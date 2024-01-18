@@ -1,10 +1,9 @@
 ---
 # omit title and subtitle if you're doing a custom title block
-title: Untitled
-subtitle: A thing here
+title: Shrinking sea ice
 # for social previews
-pagetitle: Untitled
-description: A description for social previews
+pagetitle: Shrinking sea ice
+description: Sea ice is disappearing in both the north and the south.
 twitter-card:
   site: "@360info_global"
   image: "/folder/example.png"
@@ -17,39 +16,101 @@ format:
 # metadata for modals and embed sharing functionality
 360embed:
   byline: James Goldie, 360info
-  data-source: XXX
+  data-source: NSIDC
   type: map
-  aspect-ratio: 20 / 19
-  min-height: 500px
+  aspect-ratio: 11 / 10
+  min-height: 350px
+  max-height: 776px
   bg-colour: white
-  title: "Interactive: title"
-  domain: https://example.360visuals.org
-  fragments: state, month
-  path: /map/
+  title: "Interactive: shrinking sea ice"
+  domain: https://seaice.360visuals.org
+  fragments: 
+  path: /seaice-chart/
   about: |
-    Here's a place to **tell people** and [link to things](https://example.com)!
+    The data in this chart comes from the [Sea Ice Index](https://nsidc.org/data/g02135/versions/3) dataset, produced by the ([National Snow and Ice Data Center](https://nsidc.org)). Daily and annual statistics are available on [GitHub](https://github.com/tracker-seaice/data).
 ---
 
 {{< include _popups/_buttons.qmd >}}
 
 ```{ojs}
 //| label: get-data
+seaiceNorth = FileAttachment("/data/seaice-annual-north.csv").csv({ typed: true})
+seaiceSouth = FileAttachment("/data/seaice-annual-south.csv").csv({ typed: true})
 
-import { aq, op } from "@uwdata/arquero"
+seaiceAnnual = hemisphere == "north" ? seaiceNorth : seaiceSouth
+```
 
-seaice =
-  aq.loadCSV(
-    // "https://noaadata.apps.nsidc.org/NOAA/G02135/south/daily/data/" +
-    // "S_seaice_extent_daily_v3.0.csv",
-    "data/seaice-south.csv"
-    {
-      names: ["year", "month", "day", "extent_m_sqkm", "missing_m_sqkm",
-        "source"],
-      header: false,
-      skip: 2
-    })
+```{ojs}
+//| label: plot
+Plot.plot({
+  marks: [
+    Plot.line(seaiceAnnual, {
+      x: "year",
+      y: statistic,
+      strokeWidth: width < 300 ? 2.5 : 1.5,
+      stroke: "royalblue",
+      opacity: 0.5
+    }),
+    Plot.dot(seaiceAnnual, {
+      x: "year",
+      y: statistic,
+      r: 3,
+      fill: "royalblue",
+      stroke: "white"
+    }),
+    // post-2016
+    hemisphere == "south" ?
+      Plot.ruleX([2015.5], {
+        stroke: "grey",
+        strokeDasharray: "2"
+      }) : null,
+    hemisphere == "south" ?
+      Plot.text(["Sea ice began to shrink in 2016"], {
+        x: 2015.7,
+        y: minValue + 0.965 * (maxValue - minValue),
+        textAnchor: "start",
+        lineWidth: 10,
+        fill: "grey"
+      }) : null
+  ],
+  x: {
+    label: "Year →"
+  },
+  y: {
+    label: "↑ Sea ice extent (M sq. km)"
+  },
+  marginTop: 40,
+  marginBottom: 40,
+  style: {
+    fontSize: 14,
+    fontWeight: "bold",
+    fontFamily: "Roboto Condensed"
+  }
+})
+```
 
-seaice
+```{ojs}
+//| label: controls
+
+viewof statistic = Inputs.radio(
+  new Map([
+    ["Summer minimum", "min"],
+    ["Average", "mean"],
+    ["Winter maximum", "max"]
+  ]), {
+    value: "mean"
+  })
+viewof hemisphere = Inputs.radio(
+  new Map([
+    ["Arctic (north)", "north"],
+    ["Antarctic (south)", "south"]
+  ]), {
+    value: "south"
+  })
+
+// get the max extent for positioning text annotation
+maxValue = Math.max(...seaiceAnnual.map(d => d[statistic]))
+minValue = Math.min(...seaiceAnnual.map(d => d[statistic]))
 ```
 
 {{< include _popups/_dialogs.qmd >}}
