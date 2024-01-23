@@ -1,5 +1,5 @@
 # Sea ice tracker
-### [📋&nbsp;Add&nbsp;graphic&nbsp;to&nbsp;your&nbsp;story]([report_share_url]) • [📊&nbsp;Get&nbsp;the&nbsp;data](data) • [💻&nbsp;Reproduce&nbsp;the&nbsp;analysis](#-reproduce-the-analysis)
+### [📋&nbsp;Add&nbsp;graphic&nbsp;to&nbsp;your&nbsp;story](https://seaicetracker.360visuals.org/seaice-chart/) • [📊&nbsp;Get&nbsp;the&nbsp;data](data)
 
 Daily updating data set of sea ice extent, courtesy of the [National Snow and ice Data Center](https://nsidc.org) .
 
