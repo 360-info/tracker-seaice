@@ -7,7 +7,7 @@
         "name": "James Goldie"
     }
   ],
-  "description": "<p>Tracks the daily sea ice extent for the Arctic Circle and ANtarctica using the <a href=\"https://nsidc.org\">NSIDC's</a> <a href=\"https://nsidc.org/data/g02135/versions/3\">Sea Ice Index</a> dataset, as well as pre-calculating several useful measures: historical inter-quartile range across the year, the previous lowest year and the previous year.</p>",
+  "description": "<p>Tracks the daily sea ice extent for the Arctic Circle and Antarctica using the <a href=\"https://nsidc.org\">NSIDC's</a> <a href=\"https://nsidc.org/data/g02135/versions/3\">Sea Ice Index</a> dataset, as well as pre-calculating several useful measures: historical inter-quartile range across the year, the previous lowest year and the previous year.</p>",
   "license": "cc-by",
   "keywords": [
     "antarctic",
